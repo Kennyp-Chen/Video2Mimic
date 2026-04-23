@@ -45,7 +45,7 @@ python scripts/batch_gmr_pkl_to_csv.py --folder /home/.../GMR/motions/G1/
 
 安装和环境配置参照https://github.com/HybridRobotics/whole_body_tracking
 
-也可以使用我的仓库https://github.com/Kennyp-Chen/BeyondMimic_Hero.其中包含了G1 23dof 版本的Train\Play代码，并且可以使用tensorboard进行训练过程的可视化，无需wandb注册也可以训练。
+也可以使用我的仓库https://github.com/Kennyp-Chen/BeyondMimic_Hero. 其中包含了G1 23dof 版本的Train\Play代码，并且可以使用tensorboard进行训练过程的可视化，无需wandb注册也可以训练。
 
 ## 四、 Sim2Real
 
