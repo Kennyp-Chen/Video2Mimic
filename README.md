@@ -1,11 +1,16 @@
 # Video2Mimic: GVHMR+GMR - 单目视频转换为宇树G1机器人重定向动作数据
 > **注意：此版本是基于 GVHMR和GMR两个项目之上，优化的单目视频机器人动作重定向流程。**
 
+**最后更新：2026年4月24日**
+
 增加功能：
 - video_editing.py 视频裁减工具；
 - gvhmr2robot_fix.py 自动解决脚部悬空；
 - gvhmr2robot_fix.py 自动在原始动作前后加入默认站立姿态，并平滑过渡，可选过渡帧数；
-- gvhmr2robot_fix.py 加入G1 23dof版本的重定向。
+- gvhmr2robot_fix.py 加入G1 23dof版本的重定向；
+- gvhmr2robot_fix.py 支持自定义起始和结束默认姿态的面朝方向角度（通过 --default_facing_angle 参数）【2026-04-24】；
+- gvhmr2robot_fix.py 改进平滑过渡算法，使用SLERP进行四元数插值，防止足部离地【2026-04-24】；
+- gvhmr2robot_fix.py 添加安全根部高度检测，防止蹲下姿态时穿过地面【2026-04-24】。
 
 ## 一、GVHMR 视频转动作数据
 
