@@ -10,14 +10,16 @@
 
 ```
 Video2Track/
-├── GEM-X/          # NVIDIA GEM — 77关节SOMA人体姿态估计（Apache 2.0）
-├── GMR/            # 通用动作重定向 — SMPL-X/BVH/FBX → 机器人DOF（MIT）
-├── GVHMR/          # 单目视频 → SMPL-X人体运动恢复（SIGGRAPH Asia 2024）
-├── Robot_videos/   # 测试视频素材（未跟踪）
-├── video_editing.py      # 视频裁剪工具（ffmpeg）
-├── audio_video_merge.py  # 音频视频融合工具（ffmpeg）
+├── GEM-X/             # NVIDIA GEM — 77关节SOMA人体姿态估计（Apache 2.0）
+├── GMR/               # 通用动作重定向 — SMPL-X/BVH/FBX → 机器人DOF（MIT）
+├── GVHMR/             # 单目视频 → SMPL-X人体运动恢复（SIGGRAPH Asia 2024）
+├── BeyondMimic/       # RL训练框架，视频→机器人→策略训练（基于Isaac Lab）
+├── Robot_videos/      # 测试视频素材（未跟踪）
+├── video_editing.py         # 视频裁剪工具（ffmpeg）
+├── audio_video_merge.py     # 音频视频融合工具（ffmpeg）
+├── run_pipeline.sh          # 全流程交互式脚本
 ├── GMR/scripts/gvhmr2robot_fix.py    # ★ 核心改进脚本（地面接触修正、默认姿态填充、SLERP平滑）
-└── GMR/scripts/batch_gmr_pkl_to_csv.py # ★ PKL批量转CSV（供BeyondMimic使用）
+└── GMR/scripts/batch_gmr_pkl_to_csv.py # ★ PKL批量转CSV
 ```
 
 ## 子模块关系
@@ -64,6 +66,39 @@ python scripts/batch_gmr_pkl_to_csv.py --folder motions/G1/
 cd GEM-X
 source .venv/bin/activate  # uv + Python 3.12
 python scripts/demo/demo_soma.py --video path/to/video.mp4 --ckpt inputs/pretrained/gem_soma.ckpt --retarget
+```
+
+### Step 4: CSV → NPZ → RL训练（BeyondMimic）
+
+**安装**: 需要 Isaac Lab v2.1.0，参考 [官方安装指南](https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html)
+
+```bash
+# 安装 BeyondMimic 包
+cd BeyondMimic
+python -m pip install -e source/whole_body_tracking
+
+# 下载机器人描述文件（使用已安装Isaac Lab的Python）
+curl -L -o unitree_description.tar.gz https://storage.googleapis.com/qiayuanl_robot_descriptions/unitree_description.tar.gz && \
+tar -xzf unitree_description.tar.gz -C source/whole_body_tracking/whole_body_tracking/assets/ && \
+rm unitree_description.tar.gz
+```
+
+## BeyondMimic 关键命令
+
+```bash
+# CSV → NPZ（在Isaac Sim中计算FK，需要 --headless）
+python scripts/csv_to_npz.py --input_file GMR/motions/G1/csv/<name>.csv --input_fps 30 --output_name <name> --headless
+
+# 批量转换（支持 23/29 DOF，自动跳过已存在的）
+python scripts/batch_csv_to_npz.py --input_dir GMR/motions/G1/csv/ --output_dir GMR/motions/G1/npz/ --dof 29 --skip_existing --headless
+
+# 回放NPZ验证
+python scripts/replay_npz.py --motion_file GMR/motions/G1/npz/<name>.npz --dof 29
+
+# 训练PPO策略
+python scripts/rsl_rl/train.py --task=Tracking-Flat-G1-v0 \
+    --motion_file GMR/motions/G1/npz/<name>.npz \
+    --headless --logger wandb --log_project_name video2mimic --run_name <name>
 ```
 
 ## gvhmr2robot_fix.py 关键参数

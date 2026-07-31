@@ -144,6 +144,7 @@ main() {
             log "裁剪完成"
         fi
         VIDEO_FOR_GVHMR="$TRIMMED_VIDEO"
+        VIDEO_NAME="trimmed_${VIDEO_NAME}"
     fi
 
     # ════════════════════════════════════════════════════════════
@@ -166,7 +167,6 @@ main() {
                 -s "$AUDIO_START" -o "$WITH_AUDIO"
             log "音频融合完成"
         fi
-        VIDEO_FOR_GVHMR="$WITH_AUDIO"
     fi
 
     # ════════════════════════════════════════════════════════════
@@ -194,14 +194,30 @@ main() {
     else
         conda activate gvhmr
         cd "$GVHMR_DIR"
+
+        # 首次尝试
         set +e
         python tools/demo/demo.py --video="$VIDEO_FOR_GVHMR" $GVHMR_EXTRA
         GVHMR_EXIT=$?
         set -euo pipefail
+
+        # 如果失败且之前没加 -s，自动用 -s 重试（SimpleVO 在某些视频上会崩溃）
+        if [ $GVHMR_EXIT -ne 0 ] && [ "$GVHMR_EXTRA" != "-s" ]; then
+            warn "GVHMR 首次运行失败（通常是 SimpleVO 视觉里程计崩溃）"
+            warn "自动使用 -s（静态相机模式）重试..."
+            warn "删除 SimpleVO 缓存文件..."
+            rm -rf "${GVHMR_DIR}/outputs/demo/${VIDEO_NAME}/preprocess/"
+            set +e
+            python tools/demo/demo.py --video="$VIDEO_FOR_GVHMR" -s
+            GVHMR_EXIT=$?
+            set -euo pipefail
+        fi
+
         cd "$ROOT_DIR"
 
         if [ $GVHMR_EXIT -ne 0 ]; then
-            err "GVHMR 运行失败，请检查日志。可尝试使用绝对路径的视频。"
+            err "GVHMR 运行失败。"
+            err "可尝试手动运行: cd GVHMR && python tools/demo/demo.py --video=\"$VIDEO_FOR_GVHMR\" -s"
             exit 1
         fi
 

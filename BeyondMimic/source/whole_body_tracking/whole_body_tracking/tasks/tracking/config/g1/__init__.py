@@ -1,0 +1,99 @@
+import gymnasium as gym
+
+from . import agents, flat_env_cfg, flat_env_cfg_23dof, flat_env_cfg_wo_state_stable
+
+##
+# Register Gym environments.
+##
+
+gym.register(
+    id="Tracking-Flat-G1-23DOF-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": flat_env_cfg_23dof.G1_23dof_FlatEnvCfg,
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:G1FlatPPORunnerCfg",
+    },
+)
+gym.register(
+    id="Tracking-Flat-G1-23DOF-Wo-State-Estimation-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": flat_env_cfg_23dof.G1_23dof_FlatWoStateEstimationEnvCfg,
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:G1FlatPPORunnerCfg",
+    },
+)
+
+
+gym.register(
+    id="Tracking-Flat-G1-23DOF-Low-Freq-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": flat_env_cfg_23dof.G1_23dof_FlatLowFreqEnvCfg,
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:G1FlatLowFreqPPORunnerCfg",
+    },
+)
+
+gym.register(
+    id="Tracking-Flat-G1-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": flat_env_cfg.G1FlatEnvCfg,
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:G1FlatPPORunnerCfg",
+    },
+)
+
+gym.register(
+    id="Tracking-Flat-G1-Wo-State-Estimation-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": flat_env_cfg.G1FlatWoStateEstimationEnvCfg,
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:G1FlatPPORunnerCfg",
+    },
+)
+
+
+gym.register(
+    id="Tracking-Flat-G1-Low-Freq-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": flat_env_cfg.G1FlatLowFreqEnvCfg,
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:G1FlatLowFreqPPORunnerCfg",
+    },
+)
+
+# WoStateEstimation 稳定性优化配置
+gym.register(
+    id="Tracking-Flat-G1-Wo-State-Stable-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": flat_env_cfg_wo_state_stable.G1FlatWoStateStableEnvCfg,
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:G1FlatPPORunnerCfg",
+    },
+)
+
+gym.register(
+    id="Tracking-Flat-G1-Wo-State-Forward-Bias-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": flat_env_cfg_wo_state_stable.G1FlatWoStateForwardBiasEnvCfg,
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:G1FlatPPORunnerCfg",
+    },
+)
+
+gym.register(
+    id="Tracking-Flat-G1-Wo-State-Robust-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": flat_env_cfg_wo_state_stable.G1FlatWoStateRobustEnvCfg,
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:G1FlatPPORunnerCfg",
+    },
+)
